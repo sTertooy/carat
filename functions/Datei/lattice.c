@@ -10,14 +10,14 @@ lattice_element **lattice(char *symb,int dim,int almost,int zclass,int *no,
 
    FILE *infile;
 
-   int i;
+   int i, c;
 
    /* saves space on the stack */
-   static char filename[1000];
+   static char filename[1024], format[1024];
 
    /* get the appropiate filename */
-   sprintf(filename,"%s%s%d/%s%s_%d_%d",TOPDIR,"/tables/lattices/dim",
-             dim,"lattice_",symb,almost,zclass);
+   get_data_dir(format, "tables/lattices/dim%d/%s%s_%d_%d");
+   sprintf(filename, format, dim, "lattice_", symb, almost, zclass);
 
    infile = fopen(filename,"r");
 
@@ -27,7 +27,7 @@ lattice_element **lattice(char *symb,int dim,int almost,int zclass,int *no,
      exit(4);
    }
 
-   fscanf(infile,"#%d\n",no);
+   c=fscanf(infile,"#%d\n",no);
 
    if (INFO_LEVEL & 1){
       fprintf(stderr,"%d\n",no[0]);

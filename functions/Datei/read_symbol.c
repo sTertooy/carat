@@ -1,9 +1,10 @@
 #include "typedef.h"    
 
 #include "matrix.h"
-#include"getput.h"
-#include"datei.h"
-#include"longtools.h"
+#include "getput.h"
+#include "datei.h"
+#include "longtools.h"
+#include "tools.h"
 
 /**************************************************************************\
 @---------------------------------------------------------------------------
@@ -40,13 +41,12 @@ char *file_name;
 {
 char  string[80],
       slash, *str ;
-char f[80];
+char f[1024], dat[1024];
 /* changed from "static char fn[80]" to switch away from static variables */
 char *fn;
-char *dat;
 FILE *infile;
 int i, j, k, l, m, n, p, q, x, groesser;
-int no;
+int no, c;
 int breite;
 char merk[15];
 char merk1[10];
@@ -66,7 +66,7 @@ matrix_TYP *In;
 for (i=0;i<80;i++) string[i] = 0;
 
 /* inserted to switch away from static variables */
-fn = (char *) calloc(80,sizeof(char));
+fn = (char *) calloc(1024,sizeof(char));
 
 /*------------------------------------------------------------*\
 | Open input file               	         	       |
@@ -87,8 +87,8 @@ for(i=0; i<MAXDIM; i++)
   for(j=0; j<5;j++)
     zerleg[i][j] = 0;
 printf("Please input the symbol for the crystal-family: ");
-fscanf (infile, "%[ \t\n]", string);
-fscanf (infile, "%[^\n]",string);
+c=fscanf (infile, "%[ \t\n]", string);
+c=fscanf (infile, "%[^\n]",string);
 strtok (string, "%");
 
 right_order(string);
@@ -109,7 +109,7 @@ while( strlen(str) != 0)
        exit(3);
     }
     zerleg[konstit][0] = konst_dim;
-    itoa(konst_dim, konst[konstit]);
+    itoasc(konst_dim, konst[konstit]);
     k = strcspn(str, ";");
     if(k == i)
       zerleg[konstit][3] = 1;
@@ -121,7 +121,7 @@ while( strlen(str) != 0)
        str = str+j+1;
        sscanf(str, "%d", &index);
        zerleg[konstit][1] = index;
-       itoa(index, merk);
+       itoasc(index, merk);
        strcat(konst[konstit], merk);
        clear(merk);
        if(l<i)
@@ -207,11 +207,11 @@ for(i=0; i<MAXDIM; i++)
 {
   if(zerleg[i][4] != 0)
   {
-    itoa(zerleg[i][0], konst[konstit]);
+    itoasc(zerleg[i][0], konst[konstit]);
     if(zerleg[i][1] != 0)
     {
        strcat(konst[konstit], "-");
-       itoa(zerleg[i][1], merk);
+       itoasc(zerleg[i][1], merk);
        strcat(konst[konstit], merk);
        clear(merk);
        if(zerleg[i][2] != 0)
@@ -225,20 +225,16 @@ for(i=0; i<MAXDIM; i++)
 |  read the atoms                                                      |
 \*--------------------------------------------------------------------*/
 grps = (bravais_TYP **) malloc(konstit *sizeof(bravais_TYP *));
-dat = ATOMS;
-/**************
-dat = TOPDIR "/lib/atoms/";
-f = (char **) malloc(konstit *sizeof(char *));
-***************/
+get_data_dir(dat, "tables/atoms/");
 for(i=0; i<konstit; i++)
 {
    strcpy(f, dat);
-   itoa(zerleg[i][0], merk);
+   itoasc(zerleg[i][0], merk);
    strcat(f, merk);
    if(zerleg[i][1] != 0)
    {
      strcat(f, "-");
-     itoa(zerleg[i][1], merk);
+     itoasc(zerleg[i][1], merk);
      strcat(f, merk);
      clear(merk);
    }
@@ -502,20 +498,17 @@ for(i=0; i<konstit; i++)
 /*--------------------------------------------------------------------*\
 | find file where erg->grp->zentr are stored                           |
 \*--------------------------------------------------------------------*/
-strcpy(fn, TABLEDIM);
-/*********************************
-strcpy(fn, TOPDIR "/lib/dim");
-*********************************/
-itoa(erg->grp->dim, merk);
+get_data_dir(fn, "tables/dim");
+itoasc(erg->grp->dim, merk);
 strcat(fn, merk);
 strcat(fn, "/");
 for(i=0; i<konstit; i++)
 {
-  itoa(zerleg[i][0], merk);
+  itoasc(zerleg[i][0], merk);
   if(zerleg[i][1] != 0)
   {
     strcat(merk, "-");
-    itoa(zerleg[i][1], merk1);
+    itoasc(zerleg[i][1], merk1);
     strcat(merk, merk1);
   }
   if(zerleg[i][2] != 0)

@@ -6,9 +6,7 @@
 #include <presentation.h>
 #include <tsubgroups.h>
 #include <name.h>
-
-#define DATABASE_NAME TOPDIR "/tables/qcatalog/data"
-
+#include <datei.h>
 
 
 /* ---------------------------------------------------------------------- */
@@ -31,7 +29,7 @@ static bravais_TYP **get_supergr(char *pfad,
 				 database *database,
 				 matrix_TYP *trafoinv)
 {
-   int i, k, j, z1ri, z2ri, number, anz, nr, laenge;
+  int i, k, j, z1ri, z2ri, number, anz, nr, laenge, c;
 
    bravais_TYP *Sstd, *Ri, **Si = NULL, *Sstdinv;
 
@@ -59,7 +57,7 @@ static bravais_TYP **get_supergr(char *pfad,
    }
 
    /* Hole Worte fuer alle Untergruppen */
-   fscanf (infile, "%[^\n]",string);
+   c=fscanf (infile, "%[^\n]",string);
    if ( string[0] != '#' ) {
       anz = 1;
       mat = (matrix_TYP **)malloc(sizeof(matrix_TYP *));
@@ -201,7 +199,7 @@ bravais_TYP **tsupergroups(bravais_TYP *R,
 
    database *database;
 
-   char pfad[1024];
+   char pfad[1024], dbname[1024], format[1024];
 
    int i, j, no, dim;
 
@@ -212,17 +210,19 @@ bravais_TYP **tsupergroups(bravais_TYP *R,
 
    /* lade Datenbank */
    dim = R->dim - 1;
-   database = load_database(DATABASE_NAME, dim);
+   get_data_dir(dbname, "/tables/qcatalog/data");
+   database = load_database(dbname, dim);
 
    /* berechne den Namen */
    Name = name_fct(R, database);
    inv = mat_inv(Name.trafo);
 
+   get_data_dir(format, "tables/qcatalog/dim%d/dir.%s/ordnung.%d/%s/");
    for (i = 0; i < database->nr; i++){
       if (database->entry[i].order > Name.order &&
           database->entry[i].order % Name.order == 0){
-         sprintf(pfad,"%s/tables/qcatalog/dim%d/dir.%s/ordnung.%d/%s/",
-                 TOPDIR, dim, database->entry[i].symbol,
+	  sprintf(pfad, format,
+                 dim, database->entry[i].symbol,
                  database->entry[i].order, database->entry[i].discriminant);
 
          tmp = get_supergr(pfad, database->entry[i].abbreviation, Name,

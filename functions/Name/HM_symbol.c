@@ -8,7 +8,6 @@
 #include "sort.h"
 #include "datei.h"
 
-#define HM_TABLE TOPDIR "/tables/qcatalog/translation_HM_symbol"
 
 
 static void remove_underscore(char *s)
@@ -37,7 +36,7 @@ void display_HM_symbol(char *qname,
 {
 
    int number,
-       i,
+     i, c,
        z1in,
        z2in,
        found=0;
@@ -47,24 +46,26 @@ void display_HM_symbol(char *qname,
    char qin[1028],
         affin[128],
         affstring[128],
-        HMSYMBOL[128];
+        HMSYMBOL[128],
+        hmtab[1024];;
 
    mpz_get_str(affstring,10,aff_name);
 
-   F = fopen(HM_TABLE,"r");
+   get_data_dir(hmtab, "tables/qcatalog/translation_HM_symbol");
+   F = fopen(hmtab, "r");
 
    if (F == NULL){
-      fprintf(stderr,"can't open %s\n",HM_TABLE);
+      fprintf(stderr,"can't open %s\n", hmtab);
       exit(4);
    }
 
-   fscanf(F,"#%d\n",&number);
+   c=fscanf(F,"#%d\n",&number);
 
    fprintf(stdout,"possible Herman-Mauguin symbols describing a group\n");
    fprintf(stdout,"isomorphic to the given one: \n");
 
    for (i=0;i<number;i++){
-      fscanf(F,"qname: %s zname: %d %d aff_name: %s %s\n",
+      c=fscanf(F,"qname: %s zname: %d %d aff_name: %s %s\n",
                       qin,&z1in,&z2in,affin,HMSYMBOL);
 
       if (strcmp(qin,qname) == 0

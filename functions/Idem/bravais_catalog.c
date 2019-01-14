@@ -24,9 +24,8 @@ char *symb;
 {
 char  string[80],
       slash, *str ;
-char f[80];
+char f[1024], dat[1024];
 char *fn;
-char *dat;
 int     i, j, k, l, m, n, p, q, x, groesser;
 int len;
 int no;
@@ -43,9 +42,8 @@ int zerleg[MAXDIM][5];
 bravais_TYP **grps;
 symbol_out *erg;
 matrix_TYP *In;
-
+ 
 fn = (char *) malloc(1024 * sizeof(char));
-
 for (i=0;i<80;i++) string[i] = 0;
 
 for( i=0; i<MAXDIM; i++)
@@ -73,7 +71,7 @@ while( len > 0 )
        exit(3);
     }
     zerleg[konstit][0] = konst_dim;
-    itoa(konst_dim, konst[konstit]);
+    itoasc(konst_dim, konst[konstit]);
     k = strcspn(str, ";");
     if(k == i)
       zerleg[konstit][3] = 1;
@@ -86,7 +84,7 @@ while( len > 0 )
        len = len-j-1;
        sscanf(str, "%d", &index);
        zerleg[konstit][1] = index;
-       itoa(index, merk);
+       itoasc(index, merk);
        strcat(konst[konstit], merk);
        memset(merk,'\0',strlen(merk));
        if(l<i)
@@ -167,11 +165,11 @@ for(i=0; i<MAXDIM; i++)
 {
   if(zerleg[i][4] != 0)
   {
-    itoa(zerleg[i][0], konst[konstit]);
+    itoasc(zerleg[i][0], konst[konstit]);
     if(zerleg[i][1] != 0)
     {
        strcat(konst[konstit], "-");
-       itoa(zerleg[i][1], merk);
+       itoasc(zerleg[i][1], merk);
        strcat(konst[konstit], merk);
        memset(merk,'\0',strlen(merk));
        if(zerleg[i][2] != 0)
@@ -185,20 +183,16 @@ for(i=0; i<MAXDIM; i++)
 |  read the atoms                                                      |
 \*--------------------------------------------------------------------*/
 grps = (bravais_TYP **) malloc(konstit *sizeof(bravais_TYP *));
-dat = ATOMS;
-/**************
-dat = TOPDIR "/lib/atoms/";
-f = (char **) malloc(konstit *sizeof(char *));
-***************/
+get_data_dir(dat, "tables/atoms/");
 for(i=0; i<konstit; i++)
 {
    strcpy(f, dat);
-   itoa(zerleg[i][0], merk);
+   itoasc(zerleg[i][0], merk);
    strcat(f, merk);
    if(zerleg[i][1] != 0)
    {
      strcat(f, "-");
-     itoa(zerleg[i][1], merk);
+     itoasc(zerleg[i][1], merk);
      strcat(f, merk);
      memset(merk,'\0',strlen(merk));
    }
@@ -468,20 +462,17 @@ for(i=0; i<konstit; i++)
 /*--------------------------------------------------------------------*\
 | find file where erg->grp->zentr are stored                           |
 \*--------------------------------------------------------------------*/
-strcpy(fn, TABLEDIM);
-/*********************************
-strcpy(fn, TOPDIR "/lib/dim");
-*********************************/
-itoa(erg->grp->dim, merk);
+get_data_dir(fn, "tables/dim");
+itoasc(erg->grp->dim, merk);
 strcat(fn, merk);
 strcat(fn, "/");
 for(i=0; i<konstit; i++)
 {
-  itoa(zerleg[i][0], merk);
+  itoasc(zerleg[i][0], merk);
   if(zerleg[i][1] != 0)
   {
     strcat(merk, "-");
-    itoa(zerleg[i][1], merk1);
+    itoasc(zerleg[i][1], merk1);
     strcat(merk, merk1);
   }
   if(zerleg[i][2] != 0)

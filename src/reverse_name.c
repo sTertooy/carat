@@ -13,8 +13,6 @@
 #include "gmp.h"
 #include "longtools.h"
 
-#define DATABASE_NAME TOPDIR "/tables/qcatalog/data"
-
 int SFLAG;
 int INFO_LEVEL;
 boolean GRAPH = FALSE;
@@ -29,7 +27,7 @@ int main (int argc, char *argv[])
 
 
   int zname[2],
-      i;
+    i, c;
 
   MP_INT aff_name;
 
@@ -86,10 +84,10 @@ int main (int argc, char *argv[])
 
 
   fprintf(stderr,"qname:\n");
-  scanf("%s",qname);
+  c=scanf("%s",qname);
 
   fprintf(stderr,"zname: \n");
-  scanf("%d %d",zname,zname+1);
+  c=scanf("%d %d",zname,zname+1);
 
   fprintf(stderr,"affname: \n");
   mpz_init(&aff_name);

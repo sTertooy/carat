@@ -4,10 +4,8 @@
 #include <matrix.h>
 #include <presentation.h>
 #include <tsubgroups.h>
-
-#define DATABASE_NAME TOPDIR "/tables/qcatalog/data"
-
-
+#include <datei.h>
+#include <graph.h>
 
 
 /* -------------------------------------------------------------------- */
@@ -71,7 +69,7 @@ TSubgroup_TYP *ite_gruppe(bravais_TYP *R,
    S->P = psg;
    S->orbitlength = mat->array.SZ[mat->rows - 1][0];
    S->pointgrouporder = mat->array.SZ[mat->rows - 1][1];
-   sg = NULL;
+   return S;
 }
 
 
@@ -121,13 +119,14 @@ TSubgroup_TYP **tsubgroup(bravais_TYP *R,
 
    database *database;
 
-
+   char dbname[1024];
 
    if (cflag)
       aflag = TRUE;
       
    /* lade Datenbank */
-   database = load_database(DATABASE_NAME, P->dim);
+   get_data_dir(dbname, "/tables/qcatalog/data");
+   database = load_database(dbname, P->dim);
 
 
 
